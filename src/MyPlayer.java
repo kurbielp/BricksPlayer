@@ -131,9 +131,10 @@ public  class MyPlayer {
         }
     }
 
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TO SPRAWDŹ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    public static void ofensywa(int[] a ,int[] b ,int[][] endangered ) {
-
+    public static void ofensywa(int[] a ,int[] b /*,int[][] endangered*/ ) {
+        //a i b są z maina (zaznaczone !!!)
         outerloop3:
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
@@ -147,15 +148,16 @@ public  class MyPlayer {
 
                             board[i][j] = 1;
                             board[i + a[k]][i + a[k]] = 1;
-                            endangered[i][j] = 0;
-                            endangered[i + a[k]][i + a[k]] = 0;
-                            /*
+                           // endangered[i][j] = 0;
+                           // endangered[i + a[k]][i + a[k]] = 0;
+
                             int x1= i+1;
                             int y1 = j+1;
                             int x2=i+a[k]+1;
                             int y2=j+b[k]+1;
-                            */
-                            System.out.println((i+1) + " " + (j+1)+ " " + (i+a[k]+1) + " " +(j+b[k]+1));
+
+                            //System.out.println((i+1) + " " + (j+1)+ " " + (i+a[k]+1) + " " +(j+b[k]+1));
+                            System.out.println(x1 + " " + y1+ " " + x2 + " " +y2 );
 
 
                             //checkIfCaptured(i, j, i + a[k], j + b[k], a, b, endangered);
@@ -167,6 +169,7 @@ public  class MyPlayer {
             }
 
         }
+ //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!KONIEC!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 /*
         outerloop4:
         for(int i=0;i<size;i++){
@@ -208,6 +211,7 @@ public  class MyPlayer {
             int[][] endangered = new int[size][size];// komorki majace tylko jedna sasiednie wolne pole
             int numberOfFreeSquares = size * size;
 
+            //!!!!!!!!!!!!!TO TE A I B DO TEGO CO MOŻesz SPRAWDZIC !!!!!!!!!
             int[] a = new int[8]; // skladowe x
             int[] b = new int[8]; // skladowe y
             //paramrtry  ktore beda dodawane do danego pola by osiagnac parametry sasiednich pol
