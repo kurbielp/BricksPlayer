@@ -9,44 +9,13 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-/**
- * Created by Mateusz on 18.11.2016.
- * Project ComputerPlayer
- */
+
 
 public  class MyPlayer {
 
 
-public void surrParameters(){
-    int[] a = new int[8]; // skladowe x
-    int[] b = new int[8]; // skladowe y
 
-    a[0] = 1;
-    b[0] = 0;
-
-    a[1] = 1;
-    b[1] = 1;
-
-    a[2] = 0;
-    b[2] = 1;
-
-    a[3] = -1;
-    b[3] = 1;
-
-    a[4] = 0;
-    b[4] = 0;
-
-    a[5] = -1;
-    b[5] = -1;
-
-    a[6] = 0;
-    b[6] = -1;
-
-    a[7] = 1;
-    b[7] = -1;
-
-}
-    public static void checkIfCaptured(int x1, int y1, int x2, int y2, int[] a, int[] b, int[][] endangered) {
+    public static void checkIfCaptured(int x1, int y1, int x2, int y2, int[] a, int[] b, int[][] endangered, int numberOfFreeSquares) {
         int currentX;
         int  currentY;
         boolean isSurrounded = true;
@@ -63,7 +32,7 @@ public void surrParameters(){
                 currentX = brickx[k] + a[i];
                 currentY =  brickx[k] + a[i];
 
-                for (int j = 0; j < 8; j++) {
+                for (int j = 0; j < 8; j+=2) {
                     if( currentX + a[i]< 0 ||  currentX + a[i] > size ||  currentY + a[i] < 0 ||  currentY + a[i] > size )
                         continue;
                     if (board[currentX + a[j]][currentY + b[j]] == 0) {
@@ -73,6 +42,8 @@ public void surrParameters(){
                 if (isSurrounded) {
                     board[currentX][currentY] = 1;
                     endangered[currentX][currentY] =0;
+                    numberOfFreeSquares--;
+
                 }
                 isSurrounded = true;
             }
@@ -97,7 +68,7 @@ public void surrParameters(){
                 currentX = brickx[k] + a[i];
                 currentY = bricky[k] + b[i];
 
-                for (int j = 0; j < 8; j++) {
+                for (int j = 0; j < 8; j+=2) {
                     if( currentX + a[i]< 0 ||  currentX + a[i] > size ||  currentY + a[i] < 0 ||  currentY + a[i] > size )
                         continue;
                     if (board[currentX + a[j]][currentY + b[j]] == 0) {
@@ -114,31 +85,40 @@ public void surrParameters(){
 
     }
     public static void defensywa(int[] a ,int[] b ,int[][] endangered ){
-        for(int i=1;i<size;i++){
-            for(int j=1;j<size;j++){
+        for(int i=0;i<size;i++){
+            for(int j=0;j<size;j++){
                 if(endangered[i][j]==0) {
-                    for (int k = 0; k < 8; k++) {
+                    for (int k = 0; k < 8; k+=2) {
                         if( i + a[k]< 0 ||  i + a[k]> size ||  j + b[k] < 0 ||  j + b[k]  > size )
                             continue;
-                        if (endangered[i + a[k]][j + b[k]] == 0)
-                            System.out.println(i +1 + " " + j +1+ " " + i + a[k]+1 + " " + i + a[k]+1);
-                        board[i][j] = 1;
-                        board[i + a[k]][i + a[k]] = 1;
-                        endangered[i][j] = 0;
-                        endangered[i + a[k]][i + a[k]] = 0;
-                        break;
+                        if (endangered[i + a[k]][j + b[k]] == 0) {
+                            i += 1;
+                            j += 1;
+                            int u = i + a[k];
+                            int v = j + b[k];
+                            System.out.println(i + " " + j + " " + u + " " + v);
+                            board[i][j] = 1;
+                            board[i + a[k]][i + a[k]] = 1;
+                            endangered[i][j] = 0;
+                            endangered[i + a[k]][i + a[k]] = 0;
+                            break;
+                        }
                     }
                 }
             }
         }
-        for(int i=1;i<size;i++){
-            for(int j=1;j<size;j++){
+        for(int i=0;i<size;i++){
+            for(int j=0;j<size;j++){
                 if(board[i][j]==0) {
-                    for (int k = 0; k < 8; k++) {
+                    for (int k = 0; k < 8; k+=2) {
                         if( i + a[k]< 0 ||  i + a[k]> size ||  j + b[k] < 0 ||  j + b[k]  > size )
                             continue;
                         if (board[i + a[k]][j + b[k]] == 0) {
-                            System.out.println(i +1 + " " + j +1+ " " + i + a[k]+1 + " " + i + a[k]+1);
+                            i+=1;
+                            j+=1;
+                            int u=i+a[k];
+                            int v=j+b[k];
+                            System.out.println(i + " " + j+ " " + u + " " +v);
                             board[i][j] = 1;
                             board[i + a[k]][i + a[k]] = 1;
                             endangered[i][j] = 0;
@@ -150,47 +130,72 @@ public void surrParameters(){
             }
         }
     }
+
+
     public static void ofensywa(int[] a ,int[] b ,int[][] endangered ) {
-        for (int i = 1; i < size; i++) {
-            for (int j = 1; j < size; j++) {
-                if (endangered[i][j] == 1) {
-                    for (int k = 0; k < 8; k++) {
-                        if( i + a[k]< 0 ||  i + a[k]> size ||  j + b[k] < 0 ||  j + b[k]  > size )
+
+        outerloop3:
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (/*endangered[i][j] == 1 && */board[i][j] == 0) {
+                    for (int k = 0; k < 8; k+=2) {
+                        if( i + a[k]< 0 ||  i + a[k]> size-1 ||  j + b[k] < 0 ||  j + b[k]  > size-1 ) {
+
                             continue;
+                        }
                         if (board[i + a[k]][j + b[k]] == 0) {
-                            System.out.println(i +1 + " " + j +1+ " " + i + a[k]+1 + " " + i + a[k]+1);
+
                             board[i][j] = 1;
                             board[i + a[k]][i + a[k]] = 1;
                             endangered[i][j] = 0;
                             endangered[i + a[k]][i + a[k]] = 0;
-                            checkIfCaptured(i, j, i + a[k], j + b[k], a, b, endangered);
-                            checkIfEndangered(i, j, i + a[k], j + b[k], a, b, endangered);
-                            break;
+                            /*
+                            int x1= i+1;
+                            int y1 = j+1;
+                            int x2=i+a[k]+1;
+                            int y2=j+b[k]+1;
+                            */
+                            System.out.println((i+1) + " " + (j+1)+ " " + (i+a[k]+1) + " " +(j+b[k]+1));
+
+
+                            //checkIfCaptured(i, j, i + a[k], j + b[k], a, b, endangered);
+                            //checkIfEndangered(i, j, i + a[k], j + b[k], a, b, endangered);
+                            break outerloop3;
                         }
                     }
                 }
             }
+
         }
-        for(int i=1;i<size;i++){
-            for(int j=1;j<size;j++){
+/*
+        outerloop4:
+        for(int i=0;i<size;i++){
+            for(int j=0;j<size;j++){
                 if(board[i][j]==0) {
-                    for (int k = 0; k < 8; k++) {
-                        if( i + a[k]< 0 ||  i + a[k]> size ||  j + b[k] < 0 ||  j + b[k]  > size )
+                    for (int k = 0; k < 8; k+=2) {
+                        if( i + a[k]< 0 ||  i + a[k]> size-1 ||  j + b[k] < 0 ||  j + b[k]  > size-1 )
                             continue;
                         if (board[i + a[k]][j + b[k]] == 0) {
-                            System.out.println(i +1 + " " + j +1+ " " + i + a[k]+1 + " " + i + a[k]+1);
+                            i+=1;
+                            j+=1;
+                            int u=i+a[k];
+                            int v=j+b[k];
+                            System.out.println(i + " " + j+ " " + u + " " +v);
                             board[i][j] = 1;
                             board[i + a[k]][i + a[k]] = 1;
                             endangered[i][j] = 0;
                             endangered[i + a[k]][i + a[k]] = 0;
-                            checkIfCaptured(i, j, i + a[k], j + b[k], a, b, endangered);
-                            checkIfEndangered(i, j, i + a[k], j + b[k], a, b, endangered);
-                            break;
+                            //checkIfCaptured(i, j, i + a[k], j + b[k], a, b, endangered);
+                            //checkIfEndangered(i, j, i + a[k], j + b[k], a, b, endangered);
+                            break outerloop4;
                         }
                     }
                 }
             }
         }
+        */
+
+
     }
     
     public static void main(String args[]) {
@@ -218,7 +223,7 @@ public void surrParameters(){
             a[3] = -1;
             b[3] = 1;
 
-            a[4] = 0;
+            a[4] = -1;
             b[4] = 0;
 
             a[5] = -1;
@@ -249,20 +254,21 @@ public void surrParameters(){
                     endangered[previousx1][previousy1] = 0;
                     endangered[previousx2][previousy2] = 0;
                     numberOfFreeSquares -=2;
-                    checkIfCaptured(previousx1,previousy1 ,previousx2, previousy2, a, b, endangered); // sprawdza sasiednie pola wokol klocka sa pojedynczymi wolnymi otoczone naaokoło
-                    checkIfEndangered(previousx1,previousy1 ,previousx2, previousy2, a, b, endangered); //sprawdza sasiednie pola w okol klocka sasiaduja tylko z 1 polem wolnym polem
+                  // checkIfCaptured(previousx1,previousy1 ,previousx2, previousy2, a, b, endangered); // sprawdza sasiednie pola wokol klocka sa pojedynczymi wolnymi otoczone naaokoło
+                   // checkIfEndangered(previousx1,previousy1 ,previousx2, previousy2, a, b, endangered); //sprawdza sasiednie pola w okol klocka sasiaduja tylko z 1 polem wolnym polem
                 }
-                int x1 = -1;
-                int y1 = -1;
-                int x2 = -1;
-                int y2 = -1;
 
-                if (numberOfFreeSquares % 2 ==1 ) {
+
+                //System.out.println(1 + " " + 1 + " " + 1 + " " + 2);
+
+
+                if ( true       /*numberOfFreeSquares % 2 ==1 */) {
                     ofensywa(a,b,endangered);//eliminacja zagrozonych pol jesli to mozliwe (troche bez sensu zorbione bo powinno byc ze stawia obok zagrozonego by go otoczyc
                     numberOfFreeSquares-=2;
 
+
                 } else {
-                    defensywa(a,b,endangered);// proboje stawic klocek w niezagrozonych polach (chyba)
+                  // defensywa(a,b,endangered);// proboje stawic klocek w niezagrozonych polach (chyba)
                     numberOfFreeSquares-=2;
                 }
 
@@ -272,7 +278,8 @@ public void surrParameters(){
 
 
             }
-        } catch (Exception e) {
+
+       } catch (Exception e) {
 
         }
     }
@@ -312,6 +319,7 @@ public void surrParameters(){
 
     private static int[][] board;
     private static int size;
+
 }
 
 
